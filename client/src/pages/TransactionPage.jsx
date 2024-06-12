@@ -63,15 +63,15 @@ const TransactionPage = () => {
   if (loading) return null;
 
   return (
-    <div className="container ">
+    <div className="container flex items-center justify-center">
       {error ? (
-        <p className="mx-auto text-white p-3 w-fit bg-red-500 text-xl font-semibold rounded-lg">
+        <p className=" text-white p-3 w-fit bg-red-500 text-xl font-semibold rounded-lg">
           {error.message}
         </p>
       ) : (
         <form
           onSubmit={handleSumbit}
-          className="max-w-sm md:max-w-sm lg:max-w-xl md:mx-0 mx-auto order-1 md:order-none self-start  bg-gray-50 w-full p-6   rounded-md border border-gray-200"
+          className="max-w-sm md:max-w-sm lg:max-w-xl   order-1 md:order-none self-start  bg-gray-50 w-full p-6   rounded-md border border-gray-200"
         >
           <div className="mb-5">
             <h2 className="text-center text-2xl font-semibold">
