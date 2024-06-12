@@ -80,7 +80,7 @@ const Cart = ({ data, authUser }) => {
           <div className="flex items-center justify-between text-white">
             <p className="text-black font-medium">{formatDate(data?.date)}</p>
             <img
-              src={`http://localhost:4000/${authUser.profilePicture}`}
+              src={`/${authUser.profilePicture}`}
               className="w-10 h-10 rounded-full object-cover"
             />
           </div>

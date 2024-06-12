@@ -27,13 +27,9 @@ const SignUpPage = () => {
       if (image) {
         const formDataObj = new FormData();
         formDataObj.append('photo', image);
-        const response = await axios.post(
-          'http://localhost:4000/upload',
-          formDataObj,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        );
+        const response = await axios.post(`/upload`, formDataObj, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
         photoPath = response.data.path;
       }
 
