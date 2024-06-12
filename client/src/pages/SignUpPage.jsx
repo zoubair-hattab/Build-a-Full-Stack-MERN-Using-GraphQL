@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { REGISTER } from '../graphql/mutations/user.mutation';
 import { useMutation } from '@apollo/client';
 import toast from 'react-hot-toast';
 const SignUpPage = () => {
+  const navigate = useNavigate();
   const [image, setImage] = useState(null);
   const [userData, setUserData] = useState({
     username: '',
@@ -22,6 +23,8 @@ const SignUpPage = () => {
     e.preventDefault();
     try {
       await signup({ variables: { input: userData } });
+      toast.success('Your registration has been stored.');
+      navigate('/login');
     } catch (error) {
       console.error('Error logging in:', error.message);
       toast.error(error.message);
