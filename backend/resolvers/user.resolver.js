@@ -32,7 +32,7 @@ const userResolver = {
     signUp: async (_, { input }) => {
       try {
         const { username, name, password, gender } = input;
-        if (!username || !name || !password || gender) {
+        if (!username || !name || !password || !gender) {
           return new Error('All fields are required.');
         }
         const user = await User.findOne({ username });
