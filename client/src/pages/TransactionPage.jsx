@@ -129,7 +129,7 @@ const TransactionPage = () => {
                 <option defaultValue>Choose a category</option>
                 <option value="saving">Saving</option>
                 <option value="expense">Expense</option>
-                <option value="investement">Investement</option>
+                <option value="investment">Investment</option>
               </select>
             </div>
             <div>

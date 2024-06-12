@@ -91,7 +91,7 @@ const TransactionForm = () => {
             <option defaultValue>Choose a category</option>
             <option value="saving">Saving</option>
             <option value="expense">Expense</option>
-            <option value="investement">Investement</option>
+            <option value="investment">investment</option>
           </select>
         </div>
         <div>

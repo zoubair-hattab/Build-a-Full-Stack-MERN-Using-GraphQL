@@ -35,8 +35,8 @@ const Cart = ({ data, authUser }) => {
           data?.category == 'saving'
             ? 'bg-green-500'
             : data?.category == 'expense'
-            ? 'bg-red-400'
-            : 'bg-indigo-400'
+            ? 'bg-red-500'
+            : 'bg-indigo-500'
         } border-gray-190 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700`}
       >
         <div className="flex items-center justify-between mb-5">
