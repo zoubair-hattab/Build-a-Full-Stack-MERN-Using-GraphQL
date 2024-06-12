@@ -27,9 +27,13 @@ const SignUpPage = () => {
       if (image) {
         const formDataObj = new FormData();
         formDataObj.append('photo', image);
-        const response = await axios.post(`/upload`, formDataObj, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        const response = await axios.post(
+          `https://build-a-full-stack-mern-using-graphql.onrender.com/upload`,
+          formDataObj,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
         photoPath = response.data.path;
       }
 
