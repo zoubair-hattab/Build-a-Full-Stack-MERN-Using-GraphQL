@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { REGISTER } from '../graphql/mutations/user.mutation';
 import { useMutation } from '@apollo/client';
+import axios from 'axios';
 import toast from 'react-hot-toast';
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -21,8 +22,24 @@ const SignUpPage = () => {
   };
   const handleSumbit = async (e) => {
     e.preventDefault();
+    let photoPath = '';
     try {
-      await signup({ variables: { input: userData } });
+      if (image) {
+        const formDataObj = new FormData();
+        formDataObj.append('photo', image);
+        const response = await axios.post(
+          'http://localhost:4000/upload',
+          formDataObj,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          }
+        );
+        photoPath = response.data.path;
+      }
+
+      await signup({
+        variables: { input: { ...userData, profilePicture: photoPath } },
+      });
       toast.success('Your registration has been stored.');
       navigate('/login');
     } catch (error) {

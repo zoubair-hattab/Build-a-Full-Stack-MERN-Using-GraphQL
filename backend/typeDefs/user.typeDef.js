@@ -4,7 +4,7 @@ const userTypeDef = `#graphql
     username: String!
     name: String!
     password: String!
-    profilePicture: String
+    profilePicture: String!
     gender: String!
     transactions: [Transaction!]
   }
@@ -25,6 +25,7 @@ const userTypeDef = `#graphql
     name: String!
     password: String!
     gender: String!
+    profilePicture:String!
   }
 
   input LoginInput {

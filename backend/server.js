@@ -12,6 +12,7 @@ import mergedResolvers from './resolvers/index.js';
 import { connect } from './db/connect.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import upload from './utils/multer.js';
 // Required logic for integrating with Express
 
 const app = express();
@@ -45,9 +46,14 @@ app.use(
     context: async ({ req, res }) => ({ req, res }),
   })
 );
+
+app.post('/upload', upload.single('photo'), (req, res) => {
+  res.send({ path: req.file.filename });
+});
 // Modified server startup
 // npm run build will build your frontend app, and it will the optimized version of your app
 const __dirname = path.resolve();
+app.use('/', express.static('uploads'));
 app.use(express.static(path.join(__dirname, 'client/dist')));
 
 app.get('*', (req, res) => {
