@@ -2,15 +2,29 @@ import { useQuery } from '@apollo/client';
 import Cart from '../components/Cart';
 import Chart from '../components/Chart';
 import TransactionForm from '../components/TransactionForm';
-import { GET_TRANSACTIONS } from '../graphql/queries/transaction.query';
+import {
+  GET_TRANSACTIONS,
+  GET_TRANSACTION_STATISTICS,
+} from '../graphql/queries/transaction.query';
+import {
+  GET_AUTHENTICATED_USER,
+  GET_USER_AND_TRANSACTIONS,
+} from '../graphql/queries/user.query';
 
 const HomePage = () => {
-  const { loading, data, error } = useQuery(GET_TRANSACTIONS);
-  console.log(data?.transactions);
+  const { data, loading } = useQuery(GET_TRANSACTIONS);
+  const { data: authUser } = useQuery(GET_AUTHENTICATED_USER);
+  const { data: userAndTransactions } = useQuery(GET_USER_AND_TRANSACTIONS, {
+    variables: {
+      userId: authUser?.authUser?._id,
+    },
+  });
+  const { data: statisticsTransaction } = useQuery(GET_TRANSACTION_STATISTICS);
+  console.log(statisticsTransaction);
   return (
     <div className="container">
       <div className="mx-auto flex  flex-wrap gap-4">
-        <Chart />
+        <Chart info={statisticsTransaction} />
         <TransactionForm />
       </div>
       <div className="mt-5 mx-auto">
@@ -18,7 +32,7 @@ const HomePage = () => {
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ">
           {data?.transactions?.map((item) => (
             <>
-              <Cart data={item} />
+              <Cart key={item._id} data={item} authUser={authUser.authUser} />
             </>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import Transaction from '../models/transaction.model.js';
+import User from '../models/user.model.js';
 import { verifyUser } from '../utils/verifyUser.js';
 
 const transactionResolver = {
@@ -11,7 +12,7 @@ const transactionResolver = {
         }
         const transactions = await Transaction.find({
           userId: user._id,
-        }).populate('userId');
+        });
         return transactions;
       } catch (err) {
         console.error('Error getting transactions:', err);
@@ -27,7 +28,7 @@ const transactionResolver = {
         const transaction = await Transaction.findOne({
           _id: transactionId,
           userId: user._id,
-        }).populate('userId');
+        });
         if (!transaction) {
           return new Error(
             `There is no transaction under this ${transactionId}`
@@ -36,6 +37,37 @@ const transactionResolver = {
         return transaction;
       } catch (error) {
         return new Error('Error getting transactions');
+      }
+    },
+    categoryStatistics: async (_, __, { req }) => {
+      const user = await verifyUser(req);
+      if (!user) {
+        return new Error('You are not authenticated.');
+      }
+      const userId = user?._id;
+      const transactions = await Transaction.find({ userId });
+      const categoryMap = {};
+
+      transactions.forEach((transaction) => {
+        if (!categoryMap[transaction.category]) {
+          categoryMap[transaction.category] = 0;
+        }
+        categoryMap[transaction.category] += transaction.amount;
+      });
+
+      return Object.entries(categoryMap).map(([category, totalAmount]) => ({
+        category,
+        totalAmount,
+      }));
+    },
+  },
+  Transaction: {
+    user: async ({ userId }) => {
+      try {
+        const user = await User.findById(userId);
+        return user;
+      } catch (error) {
+        return new Error(error.message);
       }
     },
   },

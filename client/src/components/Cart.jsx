@@ -10,16 +10,22 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { DELETE_TRANSACTION } from '../graphql/mutations/transaction.query';
 import { useMutation } from '@apollo/client';
-const Cart = ({ data }) => {
-  const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
-    refetchQueries: ['GetTransactions'],
+import toast from 'react-hot-toast';
+import { formatDate } from '../utlis/formatDate';
+const Cart = ({ data, authUser }) => {
+  const [deleteTransaction, { loading }] = useMutation(DELETE_TRANSACTION, {
+    refetchQueries: ['GetTransactions', 'GetTransactionStatistics'],
   });
   const handleDelete = async () => {
     try {
       await deleteTransaction({
-        variables: { transactionId: data?._id },
+        variables: { transactionId: data._id },
       });
-    } catch (error) {}
+      toast.success('Transaction deleted successfully');
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -72,11 +78,9 @@ const Cart = ({ data }) => {
         </div>
         <div className="mb-3 ">
           <div className="flex items-center justify-between text-white">
-            <p className="text-black font-medium">
-              {new Date(Date(data?.date)).toLocaleDateString()}
-            </p>
+            <p className="text-black font-medium">{formatDate(data?.date)}</p>
             <img
-              src={data?.userId?.profilePicture}
+              src={authUser.profilePicture}
               className="w-10 h-10 rounded-full object-cover"
             />
           </div>

@@ -11,6 +11,7 @@ import mergedTypeDefs from './typeDefs/index.js';
 import mergedResolvers from './resolvers/index.js';
 import { connect } from './db/connect.js';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 // Required logic for integrating with Express
 
 const app = express();
@@ -38,17 +39,20 @@ app.use(
   }),
 
   express.json(),
-
   // expressMiddleware accepts the same arguments:
-
   // an Apollo Server instance and optional configuration options
-
   expressMiddleware(server, {
     context: async ({ req, res }) => ({ req, res }),
   })
 );
 // Modified server startup
+// npm run build will build your frontend app, and it will the optimized version of your app
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
+});
 await new Promise((resolve) => httpServer.listen({ port: 4000 }, resolve));
 await connect();
 console.log(`🚀 Server ready at http://localhost:4000/graphql`);

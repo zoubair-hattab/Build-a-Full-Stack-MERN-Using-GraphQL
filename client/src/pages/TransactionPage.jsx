@@ -1,7 +1,10 @@
 import { useMutation, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { GET_TRANSACTION } from '../graphql/queries/transaction.query';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  GET_TRANSACTION,
+  GET_TRANSACTION_STATISTICS,
+} from '../graphql/queries/transaction.query';
 import {
   DELETE_TRANSACTION,
   UPDATE_TRANSACTION,
@@ -10,6 +13,7 @@ import toast from 'react-hot-toast';
 
 const TransactionPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [transactionData, setTransactionDate] = useState({});
   const handleChangeInput = (e) => {
     setTransactionDate({ ...transactionData, [e.target.id]: e.target.value });
@@ -18,9 +22,12 @@ const TransactionPage = () => {
     variables: { id: id },
   });
 
-  const [updateTransaction] = useMutation(UPDATE_TRANSACTION, {
-    refetchQueries: ['GetTransactions'],
-  });
+  const [updateTransaction, { loading: loadingUpdate }] = useMutation(
+    UPDATE_TRANSACTION,
+    {
+      refetchQueries: [{ query: GET_TRANSACTION_STATISTICS }],
+    }
+  );
 
   const handleSumbit = async (e) => {
     e.preventDefault();
@@ -34,8 +41,7 @@ const TransactionPage = () => {
           },
         },
       });
-
-      setTransactionDate({});
+      navigate('/');
       toast.success('Transaction created successfully');
     } catch (err) {
       toast.error(err.message);
@@ -50,7 +56,7 @@ const TransactionPage = () => {
         category: data?.transaction?.category,
         amount: data?.transaction?.amount,
         location: data?.transaction?.location,
-        //  date: new Date(+data.transaction.date).toISOString().substr(0, 10),
+        date: new Date(+data.transaction.date).toISOString().substr(0, 10),
       });
     }
   }, [data]);
@@ -69,7 +75,7 @@ const TransactionPage = () => {
         >
           <div className="mb-5">
             <h2 className="text-center text-2xl font-semibold">
-              Create a transaction
+              Update Transaction
             </h2>
           </div>
           <div className="mb-5">
@@ -179,8 +185,9 @@ const TransactionPage = () => {
           <button
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            disabled={loadingUpdate}
           >
-            Create Transaction
+            {loadingUpdate ? 'Updating...' : 'Update Transaction'}
           </button>
         </form>
       )}

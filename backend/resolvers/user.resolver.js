@@ -2,27 +2,42 @@ import { users } from '../dummyData/data.js';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
+import Transaction from '../models/transaction.model.js';
+
 import { verifyUser } from '../utils/verifyUser.js';
 const userResolver = {
   Query: {
     authUser: async (_, ___, { req }) => {
-      const user = await verifyUser(req);
-      if (!user) {
+      try {
+        const user = await verifyUser(req);
+        if (!user) {
+          return new Error('You are not authenticated.');
+        }
+        return user;
+      } catch (error) {
+        return new Error(error.message);
+      }
+    },
+    user: async (_, { userId }) => {
+      try {
+        const user = await User.findById(userId);
+        return user;
+      } catch (error) {
         return new Error('You are not authenticated.');
       }
-      return user;
-    },
-    user: (_, { userId }) => {
-      return users.find((user) => user._id == userId);
     },
   },
+
   Mutation: {
     signUp: async (_, { input }) => {
-      const { username, name, password, gender } = input;
       try {
+        const { username, name, password, gender } = input;
+        if (!username || !name || !password || gender) {
+          return new Error('All fields are required.');
+        }
         const user = await User.findOne({ username });
         if (user) {
-          throw new Error('Username already exist.');
+          return new Error('Username already exist.');
         }
         const passwordHash = bcryptjs.hashSync(password, 12);
         const newUser = new User({
@@ -35,8 +50,7 @@ const userResolver = {
         const { password: pass, ...rest } = savedUser._doc;
         return rest;
       } catch (err) {
-        console.error('Error in login:', err);
-        throw new Error(err.message || 'Internal server error');
+        return new Error(err.message || 'Internal server error');
       }
     },
     login: async (_, { input }, { req, res }) => {
@@ -61,8 +75,7 @@ const userResolver = {
 
         return user;
       } catch (err) {
-        console.error('Error in login:', err);
-        throw new Error(err.message || 'Internal server error');
+        return new Error(err.message || 'Internal server error');
       }
     },
 
@@ -71,7 +84,17 @@ const userResolver = {
         res.clearCookie('token');
         return { message: 'Logged out successfully' };
       } catch (error) {
-        throw new Error(err.message || 'Internal server error');
+        return new Error(err.message || 'Internal server error');
+      }
+    },
+  },
+  User: {
+    transactions: async (parent) => {
+      try {
+        const transactions = await Transaction.find({ userId: parent._id });
+        return transactions;
+      } catch (error) {
+        return new Error(error.message);
       }
     },
   },
